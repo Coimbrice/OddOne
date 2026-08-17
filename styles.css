@@ -41,3 +41,15 @@ textarea{min-height:100px;resize:vertical}input:focus,textarea:focus{border-colo
 .divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--muted);font-size:.8rem}.divider::before,.divider::after{content:"";height:1px;flex:1;background:var(--border)}
 #manual-code{margin-bottom:10px}
 @media(max-width:520px){.app{align-items:stretch;padding:0}.card{min-height:100vh;border:0;border-radius:0;padding:28px 18px}.input-row{flex-direction:column}.round-player-list{grid-template-columns:1fr}.dialog-actions{flex-direction:column-reverse}.dialog-actions .button{width:100%}}
+
+.danger-button{
+  color:#fff;
+  background:var(--danger);
+}
+.danger-button:hover{
+  filter:brightness(1.08);
+}
+.stacked-dialog-actions{
+  display:grid;
+  grid-template-columns:1fr;
+}

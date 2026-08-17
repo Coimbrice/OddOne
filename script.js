@@ -89,7 +89,11 @@ function renderRoundPlayers(){
   session.players.forEach((p,i)=>{
     const b=document.createElement("button");b.type="button";b.className="round-player-button";b.textContent=p;
     if(seenOnThisDevice.has(i))b.classList.add("seen");
-    b.onclick=()=>{selectedPlayerIndex=i;$("#identity-title").textContent="Você é "+p+"?";$("#identity-dialog").showModal()};
+    b.onclick=()=>{
+      selectedPlayerIndex=i;
+      $("#identity-title").textContent=p;
+      $("#identity-dialog").showModal();
+    };
     list.appendChild(b);
   });
 }
@@ -114,6 +118,48 @@ function revealSelectedRole(){
 function hideRole(){
   if(selectedPlayerIndex!==null)seenOnThisDevice.add(selectedPlayerIndex);
   selectedPlayerIndex=null;renderRoundPlayers();showScreen("players-screen");
+}
+
+function remapSeenPlayersAfterRemoval(removedIndex){
+  const next=new Set();
+  seenOnThisDevice.forEach(index=>{
+    if(index<removedIndex)next.add(index);
+    else if(index>removedIndex)next.add(index-1);
+  });
+  seenOnThisDevice=next;
+}
+
+async function removeSelectedPlayer(){
+  if(selectedPlayerIndex===null)return;
+
+  const removedIndex=selectedPlayerIndex;
+  const removedName=session.players[removedIndex];
+  const wasImpostor=removedIndex===session.impostorIndex;
+
+  $("#remove-player-dialog").close();
+
+  if(wasImpostor){
+    $("#eliminated-impostor-name").textContent=`${removedName} era o impostor.`;
+    $("#game-over-location").textContent=session.location;
+    selectedPlayerIndex=null;
+    showScreen("game-over-screen");
+    return;
+  }
+
+  session.players.splice(removedIndex,1);
+
+  if(removedIndex<session.impostorIndex){
+    session.impostorIndex-=1;
+  }
+
+  remapSeenPlayersAfterRemoval(removedIndex);
+  selectedPlayerIndex=null;
+
+  sessionCode=await encryptSession(session);
+
+  $("#removed-safe-title").textContent=`${removedName} não era o impostor`;
+  renderRoundPlayers();
+  $("#removed-safe-dialog").showModal();
 }
 function setScannerStatus(msg,type=""){
   const e=$("#scanner-status");e.textContent=msg;e.className="status-text"+(type?" "+type:"");
@@ -174,9 +220,36 @@ $("#host-new-game").onclick=()=>showScreen("setup-screen");
 $("#manual-join-button").onclick=()=>joinFromCode($("#manual-code").value);
 $("#identity-cancel").onclick=()=>{selectedPlayerIndex=null;$("#identity-dialog").close()};
 $("#identity-confirm").onclick=revealSelectedRole;
+$("#remove-player-action").onclick=()=>{
+  if(selectedPlayerIndex===null)return;
+  const name=session.players[selectedPlayerIndex];
+  $("#identity-dialog").close();
+  $("#remove-player-title").textContent=`Remover ${name}?`;
+  $("#remove-player-dialog").showModal();
+};
+$("#remove-player-cancel").onclick=()=>{
+  $("#remove-player-dialog").close();
+  selectedPlayerIndex=null;
+};
+$("#remove-player-confirm").onclick=removeSelectedPlayer;
+$("#removed-safe-continue").onclick=()=>{
+  $("#removed-safe-dialog").close();
+  renderRoundPlayers();
+  showScreen("players-screen");
+};
+$("#removed-safe-qr").onclick=()=>{
+  $("#removed-safe-dialog").close();
+  renderHostQr();
+  showScreen("host-screen");
+};
 $("#finish-role").onclick=hideRole;
 $("#show-qr-again").onclick=()=>{renderHostQr();showScreen("host-screen")};
 $("#leave-game").onclick=leaveGame;
+$("#game-over-new-game").onclick=()=>{
+  session=null;sessionCode="";selectedPlayerIndex=null;seenOnThisDevice=new Set();
+  showScreen("setup-screen");
+};
+$("#game-over-home").onclick=leaveGame;
 $("#choose-starter").onclick=()=>$("#starter-dialog").showModal();
 $("#starter-cancel").onclick=()=>$("#starter-dialog").close();
 $("#starter-confirm").onclick=()=>{$("#starter-dialog").close();chooseStarter()};

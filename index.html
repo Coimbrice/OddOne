@@ -99,7 +99,7 @@
       <div class="card">
         <p class="eyebrow">Partida pronta</p>
         <h1>Quem é você?</h1>
-        <p class="subtitle">Toque no seu próprio nome. Confirme sua identidade e só então seu papel será revelado.</p>
+        <p class="subtitle">Toque em um nome para revelar seu próprio papel ou remover um jogador que precisou sair.</p>
 
         <div id="round-player-list" class="round-player-list"></div>
 
@@ -126,6 +126,25 @@
       </div>
     </section>
 
+    <section id="game-over-screen" class="screen">
+      <div class="card centered">
+        <p class="eyebrow">Fim de jogo</p>
+        <h1>Era o impostor!</h1>
+        <p id="eliminated-impostor-name" class="subtitle"></p>
+
+        <div class="role-card impostor">
+          <p class="role-label">O local era</p>
+          <h2 id="game-over-location">Shopping</h2>
+          <p>O impostor foi removido, então esta rodada acabou.</p>
+        </div>
+
+        <div class="button-stack">
+          <button id="game-over-new-game" class="button primary full">Criar uma nova partida</button>
+          <button id="game-over-home" class="button ghost full">Voltar ao início</button>
+        </div>
+      </div>
+    </section>
+
     <section id="starter-screen" class="screen">
       <div class="card centered">
         <p class="eyebrow">Começa falando</p>
@@ -139,12 +158,37 @@
 
   <dialog id="identity-dialog" class="dialog">
     <div class="dialog-content">
-      <p class="eyebrow">Confirmação</p>
-      <h2 id="identity-title">Você é Ana?</h2>
-      <p>Confirme apenas se este for o seu nome. Depois disso, o seu papel será revelado.</p>
+      <p class="eyebrow">Jogador</p>
+      <h2 id="identity-title">Ana</h2>
+      <p>O que você quer fazer com este jogador?</p>
+      <div class="dialog-actions stacked-dialog-actions">
+        <button id="identity-cancel" class="button ghost full">Voltar</button>
+        <button id="remove-player-action" class="button danger-button full">Remover jogador</button>
+        <button id="identity-confirm" class="button primary full">Sou eu — revelar papel</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="remove-player-dialog" class="dialog">
+    <div class="dialog-content">
+      <p class="eyebrow">Remover jogador</p>
+      <h2 id="remove-player-title">Remover Ana?</h2>
+      <p>Ao remover, o jogo revelará se esta pessoa era o impostor. Esta ação não pode ser desfeita nesta rodada.</p>
       <div class="dialog-actions">
-        <button id="identity-cancel" class="button ghost">Não, voltar</button>
-        <button id="identity-confirm" class="button primary">Sim, sou eu</button>
+        <button id="remove-player-cancel" class="button ghost">Cancelar</button>
+        <button id="remove-player-confirm" class="button danger-button">Remover</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="removed-safe-dialog" class="dialog">
+    <div class="dialog-content">
+      <p class="eyebrow">O jogo continua</p>
+      <h2 id="removed-safe-title">Ana não era o impostor</h2>
+      <p>Ela foi removida da partida. O impostor continua entre os jogadores restantes.</p>
+      <div class="dialog-actions stacked-dialog-actions">
+        <button id="removed-safe-qr" class="button secondary full">Mostrar QR atualizado</button>
+        <button id="removed-safe-continue" class="button primary full">Continuar jogando</button>
       </div>
     </div>
   </dialog>
