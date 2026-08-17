@@ -44,6 +44,8 @@
         </div>
         <div id="player-list" class="player-list empty"><p>Adicione pelo menos 3 jogadores.</p></div>
 
+        <button id="start-game" class="button primary full" disabled>Criar partida e gerar QR</button>
+
         <div class="locations-box">
           <div>
             <h2>Locais possíveis</h2>
@@ -51,8 +53,6 @@
           </div>
           <div id="location-list" class="tag-list"></div>
         </div>
-
-        <button id="start-game" class="button primary full" disabled>Criar partida e gerar QR</button>
       </div>
     </section>
 
@@ -106,6 +106,7 @@
         <div class="button-stack spaced">
           <button id="show-qr-again" class="button secondary full">Mostrar QR desta partida</button>
           <button id="choose-starter" class="button secondary full">Sortear quem começa</button>
+          <button id="reveal-impostor" class="button secondary full">Revelar quem era o impostor</button>
           <button id="leave-game" class="button ghost full">Sair da partida</button>
         </div>
       </div>
@@ -129,7 +130,7 @@
     <section id="game-over-screen" class="screen">
       <div class="card centered">
         <p class="eyebrow">Fim de jogo</p>
-        <h1>Era o impostor!</h1>
+        <h1 id="game-over-title">Era o impostor!</h1>
         <p id="eliminated-impostor-name" class="subtitle"></p>
 
         <div class="role-card impostor">
@@ -189,6 +190,18 @@
       <div class="dialog-actions stacked-dialog-actions">
         <button id="removed-safe-qr" class="button secondary full">Mostrar QR atualizado</button>
         <button id="removed-safe-continue" class="button primary full">Continuar jogando</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="reveal-impostor-dialog" class="dialog">
+    <div class="dialog-content">
+      <p class="eyebrow">Encerrar rodada</p>
+      <h2>Revelar o impostor?</h2>
+      <p>Isso mostrará quem era o impostor e qual era o local. Use quando a rodada tiver acabado.</p>
+      <div class="dialog-actions">
+        <button id="reveal-impostor-cancel" class="button ghost">Voltar</button>
+        <button id="reveal-impostor-confirm" class="button primary">Revelar</button>
       </div>
     </div>
   </dialog>

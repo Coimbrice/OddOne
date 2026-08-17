@@ -282,6 +282,7 @@ async function removeSelectedPlayer(){
   $("#remove-player-dialog").close();
 
   if(wasImpostor){
+    $("#game-over-title").textContent="Era o impostor!";
     $("#eliminated-impostor-name").textContent=`${removedName} era o impostor.`;
     $("#game-over-location").textContent=session.location;
     selectedPlayerIndex=null;
@@ -304,6 +305,15 @@ async function removeSelectedPlayer(){
   renderRoundPlayers();
   $("#removed-safe-dialog").showModal();
 }
+function revealImpostorAndEndGame(){
+  const impostorName=session.players[session.impostorIndex];
+  $("#game-over-title").textContent="O impostor era...";
+  $("#eliminated-impostor-name").textContent=`${impostorName} era o impostor.`;
+  $("#game-over-location").textContent=session.location;
+  selectedPlayerIndex=null;
+  showScreen("game-over-screen");
+}
+
 function setScannerStatus(msg,type=""){
   const e=$("#scanner-status");e.textContent=msg;e.className="status-text"+(type?" "+type:"");
 }
@@ -394,6 +404,12 @@ $("#game-over-new-game").onclick=()=>{
 };
 $("#game-over-home").onclick=leaveGame;
 $("#choose-starter").onclick=()=>$("#starter-dialog").showModal();
+$("#reveal-impostor").onclick=()=>$("#reveal-impostor-dialog").showModal();
+$("#reveal-impostor-cancel").onclick=()=>$("#reveal-impostor-dialog").close();
+$("#reveal-impostor-confirm").onclick=()=>{
+  $("#reveal-impostor-dialog").close();
+  revealImpostorAndEndGame();
+};
 $("#starter-cancel").onclick=()=>$("#starter-dialog").close();
 $("#starter-confirm").onclick=()=>{$("#starter-dialog").close();chooseStarter()};
 $("#starter-back").onclick=()=>{renderRoundPlayers();showScreen("players-screen")};
