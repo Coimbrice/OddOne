@@ -1,3 +1,5 @@
+const GAME_BASE_URL="https://coimbrice.github.io/OddOne/";
+
 const locations=[
 "Shopping","Cinema","Estacionamento","Universidade","Hospital","Aeroporto","Supermercado","Academia","Restaurante","Praia","Biblioteca","Hotel","Parque","Museu","Estádio","Escola","Banco","Farmácia","Delegacia","Rodoviária"
 ];
@@ -73,10 +75,13 @@ async function createGame(){
   seenOnThisDevice=new Set();
   renderHostQr();showScreen("host-screen");
 }
+function getGameUrl(){
+  return `${GAME_BASE_URL}#game=${encodeURIComponent(sessionCode)}`;
+}
 function renderHostQr(){
-  $("#qr-code").innerHTML="";$("#host-code").value=sessionCode;
+  $("#qr-code").innerHTML="";$("#host-code").value=getGameUrl();
   if(typeof QRCode==="undefined"){ $("#qr-code").innerHTML="<p style='color:#111'>Biblioteca de QR não carregou.</p>"; return; }
-  new QRCode($("#qr-code"),{text:sessionCode,width:280,height:280,correctLevel:QRCode.CorrectLevel.M});
+  new QRCode($("#qr-code"),{text:getGameUrl(),width:280,height:280,correctLevel:QRCode.CorrectLevel.M});
 }
 function openSession(){selectedPlayerIndex=null;renderRoundPlayers();showScreen("players-screen")}
 function renderRoundPlayers(){
@@ -113,10 +118,27 @@ function hideRole(){
 function setScannerStatus(msg,type=""){
   const e=$("#scanner-status");e.textContent=msg;e.className="status-text"+(type?" "+type:"");
 }
+function extractSessionCode(value){
+  const trimmed=value.trim();
+
+  try{
+    const url=new URL(trimmed);
+    const params=new URLSearchParams(url.hash.slice(1));
+    const game=params.get("game");
+    if(game)return game;
+  }catch(_){}
+
+  if(trimmed.startsWith("#game=")){
+    return trimmed.slice(6);
+  }
+
+  return trimmed;
+}
 async function joinFromCode(code){
   setScannerStatus("Lendo partida...");
   try{
-    session=await decryptSession(code);sessionCode=code.trim();seenOnThisDevice=new Set();
+    const extractedCode=extractSessionCode(code);
+    session=await decryptSession(extractedCode);sessionCode=extractedCode;seenOnThisDevice=new Set();
     await stopScanner();setScannerStatus("Partida carregada.","success");openSession();
   }catch(err){console.error(err);setScannerStatus(err.message||"Não foi possível abrir a partida.","error")}
 }
@@ -146,7 +168,7 @@ document.querySelectorAll("[data-home]").forEach(b=>b.onclick=()=>showScreen("ho
 $("#scanner-back").onclick=async()=>{await stopScanner();showScreen("home-screen")};
 $("#player-form").onsubmit=e=>{e.preventDefault();addPlayer($("#player-name").value)};
 $("#start-game").onclick=createGame;
-$("#copy-code").onclick=async()=>{try{await navigator.clipboard.writeText(sessionCode);$("#copy-code").textContent="Copiado!";setTimeout(()=>$("#copy-code").textContent="Copiar código",1200)}catch(e){$("#host-code").select();document.execCommand("copy")}};
+$("#copy-code").onclick=async()=>{try{await navigator.clipboard.writeText(getGameUrl());$("#copy-code").textContent="Copiado!";setTimeout(()=>$("#copy-code").textContent="Copiar código",1200)}catch(e){$("#host-code").select();document.execCommand("copy")}};
 $("#host-enter-game").onclick=openSession;
 $("#host-new-game").onclick=()=>showScreen("setup-screen");
 $("#manual-join-button").onclick=()=>joinFromCode($("#manual-code").value);
@@ -160,4 +182,22 @@ $("#starter-cancel").onclick=()=>$("#starter-dialog").close();
 $("#starter-confirm").onclick=()=>{$("#starter-dialog").close();chooseStarter()};
 $("#starter-back").onclick=()=>{renderRoundPlayers();showScreen("players-screen")};
 
-renderLocations();renderSetupPlayers();
+async function loadGameFromUrl(){
+  const params=new URLSearchParams(window.location.hash.slice(1));
+  const game=params.get("game");
+  if(!game)return;
+
+  try{
+    session=await decryptSession(game);
+    sessionCode=game;
+    seenOnThisDevice=new Set();
+    openSession();
+  }catch(err){
+    console.error(err);
+    history.replaceState(null,"",window.location.pathname);
+    alert("Não foi possível abrir esta partida. O QR pode ser inválido ou estar corrompido.");
+    showScreen("home-screen");
+  }
+}
+
+renderLocations();renderSetupPlayers();loadGameFromUrl();
