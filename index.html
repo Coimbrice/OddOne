@@ -2,33 +2,43 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" href="./assets/logo.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#0e1015">
-  <title>Quem é o Impostor?</title>
+  <meta name="theme-color" content="#1b211a">
+  <meta name="description" content="OddOne: um jogo presencial de dedução social para descobrir quem não sabe o local da rodada.">
+  <title>OddOne</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Coustard:wght@400;900&family=Inter:wght@400;500;600;700;800&display=swap">
   <link rel="stylesheet" href="styles.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 </head>
 <body>
+  
   <main class="app">
     <section id="home-screen" class="screen active">
-      <div class="card centered">
-        <p class="eyebrow">Jogo presencial</p>
-        <h1>Quem é o Impostor?</h1>
-        <p class="subtitle">Crie uma partida ou entre em uma partida escaneando o QR de outra pessoa.</p>
-        <div class="button-stack">
-          <button id="create-game-button" class="button primary full">Criar um jogo</button>
-          <button id="scan-game-button" class="button secondary full">Usar a câmera para entrar</button>
+      <div class="card hero-card centered">
+        <p class="eyebrow">Jogo presencial de dedução</p>
+        <div class="oddone-wordmark" aria-label="OddOne">
+          <span>Odd</span><strong>One</strong>
         </div>
+        <h1>Quem é o impostor?</h1>
+        <p class="subtitle">Todos conhecem o local, menos uma pessoa. Dê pistas, preste atenção e descubra quem está improvisando.</p>
+        <div class="button-stack">
+          <button id="create-game-button" class="button primary full">Criar partida</button>
+          <button id="scan-game-button" class="button secondary full">Entrar por QR Code</button>
+        </div>
+        <p class="home-note">Mínimo de 3 jogadores. Não é necessário criar conta.</p>
       </div>
     </section>
 
     <section id="setup-screen" class="screen">
       <div class="card">
-        <button class="back-link" data-home>← Voltar</button>
+        <button class="back-link" data-home>Voltar</button>
         <p class="eyebrow">Criar partida</p>
         <h1>Quem vai jogar?</h1>
-        <p class="subtitle">Adicione todos os participantes. Um local e um impostor serão sorteados.</p>
+        <p class="subtitle">Adicione todos os participantes. Um local e um impostor serão sorteados quando a partida for criada.</p>
 
         <form id="player-form">
           <label for="player-name">Nome do jogador</label>
@@ -49,7 +59,7 @@
         <div class="locations-box">
           <div>
             <h2>Locais possíveis</h2>
-            <p>Um será sorteado ao criar a partida.</p>
+            <p>Um deles será escolhido aleatoriamente para a rodada.</p>
           </div>
           <div id="location-list" class="tag-list"></div>
         </div>
@@ -59,8 +69,8 @@
     <section id="host-screen" class="screen">
       <div class="card centered">
         <p class="eyebrow">Partida criada</p>
-        <h1>Entre pelo QR</h1>
-        <p class="subtitle">Os outros jogadores devem abrir esta página em seus celulares e usar a câmera para escanear.</p>
+        <h1>Compartilhe a partida</h1>
+        <p class="subtitle">Os outros jogadores podem escanear este QR Code com a câmera do celular ou entrar pelo código abaixo.</p>
 
         <div class="qr-shell"><div id="qr-code"></div></div>
 
@@ -79,10 +89,10 @@
 
     <section id="scanner-screen" class="screen">
       <div class="card">
-        <button id="scanner-back" class="back-link">← Voltar</button>
+        <button id="scanner-back" class="back-link">Voltar</button>
         <p class="eyebrow">Entrar na partida</p>
-        <h1>Escaneie o QR</h1>
-        <p class="subtitle">Aponte a câmera para o QR exibido pelo criador da partida.</p>
+        <h1>Escaneie o QR Code</h1>
+        <p class="subtitle">Aponte a câmera para o código exibido no dispositivo de quem criou a partida.</p>
 
         <div id="qr-reader" class="qr-reader"></div>
         <p id="scanner-status" class="status-text"></p>
@@ -99,14 +109,14 @@
       <div class="card">
         <p class="eyebrow">Partida pronta</p>
         <h1>Quem é você?</h1>
-        <p class="subtitle">Toque em um nome para revelar seu próprio papel ou remover um jogador que precisou sair.</p>
+        <p class="subtitle">Toque no seu nome para revelar seu papel. Você também pode remover alguém que precisou sair da rodada.</p>
 
         <div id="round-player-list" class="round-player-list"></div>
 
         <div class="button-stack spaced">
           <button id="show-qr-again" class="button secondary full">Mostrar QR desta partida</button>
           <button id="choose-starter" class="button secondary full">Sortear quem começa</button>
-          <button id="reveal-impostor" class="button secondary full">Revelar quem era o impostor</button>
+          <button id="reveal-impostor" class="button secondary full">Revelar o impostor</button>
           <button id="leave-game" class="button ghost full">Sair da partida</button>
         </div>
       </div>
@@ -123,7 +133,7 @@
           <p id="role-description"></p>
         </div>
 
-        <button id="finish-role" class="button primary full">Já vi — esconder</button>
+        <button id="finish-role" class="button primary full">Já vi, esconder</button>
       </div>
     </section>
 
@@ -140,7 +150,7 @@
         </div>
 
         <div class="button-stack">
-          <button id="game-over-new-game" class="button primary full">Criar uma nova partida</button>
+          <button id="game-over-new-game" class="button primary full">Criar nova partida</button>
           <button id="game-over-home" class="button ghost full">Voltar ao início</button>
         </div>
       </div>
@@ -149,7 +159,7 @@
     <section id="starter-screen" class="screen">
       <div class="card centered">
         <p class="eyebrow">Começa falando</p>
-        <div class="starter-badge">🎤</div>
+        <div class="starter-badge" aria-hidden="true">1</div>
         <h1 id="starter-name">Jogador</h1>
         <p class="subtitle">Essa pessoa deve dar a primeira dica sobre o local.</p>
         <button id="starter-back" class="button secondary full">Voltar aos jogadores</button>
@@ -165,7 +175,7 @@
       <div class="dialog-actions stacked-dialog-actions">
         <button id="identity-cancel" class="button ghost full">Voltar</button>
         <button id="remove-player-action" class="button danger-button full">Remover jogador</button>
-        <button id="identity-confirm" class="button primary full">Sou eu — revelar papel</button>
+        <button id="identity-confirm" class="button primary full">Sou eu, revelar papel</button>
       </div>
     </div>
   </dialog>
@@ -186,7 +196,7 @@
     <div class="dialog-content">
       <p class="eyebrow">O jogo continua</p>
       <h2 id="removed-safe-title">Ana não era o impostor</h2>
-      <p>Ela foi removida da partida. O impostor continua entre os jogadores restantes.</p>
+      <p>Essa pessoa foi removida da partida. O impostor continua entre os jogadores restantes.</p>
       <div class="dialog-actions stacked-dialog-actions">
         <button id="removed-safe-qr" class="button secondary full">Mostrar QR atualizado</button>
         <button id="removed-safe-continue" class="button primary full">Continuar jogando</button>
@@ -208,6 +218,7 @@
 
   <dialog id="starter-dialog" class="dialog">
     <div class="dialog-content">
+      <p class="eyebrow">Início da rodada</p>
       <h2>Sortear quem começa?</h2>
       <p>Faça isso somente depois que todos já tiverem visto seus papéis.</p>
       <div class="dialog-actions">
