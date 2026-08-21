@@ -2,7 +2,6 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <link rel="icon" href="./assets/logo.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#1b211a">
   <meta name="description" content="OddOne: um jogo presencial de dedução social para descobrir quem não sabe o local da rodada.">
@@ -24,12 +23,12 @@
           <span>Odd</span><strong>One</strong>
         </div>
         <h1>Quem é o impostor?</h1>
-        <p class="subtitle">Todos conhecem o local, menos uma pessoa. Dê pistas, preste atenção e descubra quem está improvisando.</p>
+        <p class="subtitle">Todos conhecem o local, menos os impostores. Dê pistas, preste atenção e descubra quem está improvisando.</p>
         <div class="button-stack">
           <button id="create-game-button" class="button primary full">Criar partida</button>
           <button id="scan-game-button" class="button secondary full">Entrar por QR Code</button>
         </div>
-        <p class="home-note">Mínimo de 3 jogadores. Não é necessário criar conta.</p>
+        <p class="home-note">Mínimo de 3 jogadores. Escolha quantos impostores haverá na rodada.</p>
       </div>
     </section>
 
@@ -38,7 +37,7 @@
         <button class="back-link" data-home>Voltar</button>
         <p class="eyebrow">Criar partida</p>
         <h1>Quem vai jogar?</h1>
-        <p class="subtitle">Adicione todos os participantes. Um local e um impostor serão sorteados quando a partida for criada.</p>
+        <p class="subtitle">Adicione todos os participantes, escolha a quantidade de impostores e crie a partida.</p>
 
         <form id="player-form">
           <label for="player-name">Nome do jogador</label>
@@ -47,6 +46,14 @@
             <button class="button secondary" type="submit">Adicionar</button>
           </div>
         </form>
+
+        <div class="impostor-count-field">
+          <label for="impostor-count">Quantidade de impostores</label>
+          <select id="impostor-count" name="impostor-count">
+            <option value="1">1 impostor</option>
+          </select>
+          <p id="impostor-count-note">Adicione pelo menos 3 jogadores para criar a partida.</p>
+        </div>
 
         <div class="section-heading">
           <h2>Jogadores</h2>
@@ -116,7 +123,7 @@
         <div class="button-stack spaced">
           <button id="show-qr-again" class="button secondary full">Mostrar QR desta partida</button>
           <button id="choose-starter" class="button secondary full">Sortear quem começa</button>
-          <button id="reveal-impostor" class="button secondary full">Revelar o impostor</button>
+          <button id="reveal-impostor" class="button secondary full">Revelar impostores</button>
           <button id="leave-game" class="button ghost full">Sair da partida</button>
         </div>
       </div>
@@ -140,14 +147,14 @@
     <section id="game-over-screen" class="screen">
       <div class="card centered">
         <p class="eyebrow">Fim de jogo</p>
-        <h1 id="game-over-title">Era o impostor!</h1>
-        <p id="eliminated-impostor-name" class="subtitle"></p>
+        <h1 id="game-over-title">Impostores revelados</h1>
+        <div id="eliminated-impostor-name" class="impostor-reveal-name"></div>
 
-        <div class="role-card impostor">
-          <p class="role-label">O local era</p>
-          <h2 id="game-over-location">Shopping</h2>
-          <p>O impostor foi removido, então esta rodada acabou.</p>
-        </div>
+        <button id="game-over-location-card" class="role-card result-reveal-card" type="button">
+          <p id="game-over-location-label" class="role-label">Toque para revelar o local</p>
+          <h2 id="game-over-location">Oculto</h2>
+          <p id="game-over-description">O local continua escondido até você tocar aqui.</p>
+        </button>
 
         <div class="button-stack">
           <button id="game-over-new-game" class="button primary full">Criar nova partida</button>
@@ -196,7 +203,7 @@
     <div class="dialog-content">
       <p class="eyebrow">O jogo continua</p>
       <h2 id="removed-safe-title">Ana não era o impostor</h2>
-      <p>Essa pessoa foi removida da partida. O impostor continua entre os jogadores restantes.</p>
+      <p id="removed-player-message">Essa pessoa foi removida da partida. A rodada pode continuar.</p>
       <div class="dialog-actions stacked-dialog-actions">
         <button id="removed-safe-qr" class="button secondary full">Mostrar QR atualizado</button>
         <button id="removed-safe-continue" class="button primary full">Continuar jogando</button>
@@ -207,8 +214,8 @@
   <dialog id="reveal-impostor-dialog" class="dialog">
     <div class="dialog-content">
       <p class="eyebrow">Encerrar rodada</p>
-      <h2>Revelar o impostor?</h2>
-      <p>Isso mostrará quem era o impostor e qual era o local. Use quando a rodada tiver acabado.</p>
+      <h2 id="reveal-impostor-title">Revelar os impostores?</h2>
+      <p id="reveal-impostor-message">Isso mostrará quem são os impostores. O local continuará oculto até você tocar para revelá-lo.</p>
       <div class="dialog-actions">
         <button id="reveal-impostor-cancel" class="button ghost">Voltar</button>
         <button id="reveal-impostor-confirm" class="button primary">Revelar</button>

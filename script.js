@@ -159,6 +159,45 @@ function showScreen(id){
   window.scrollTo({top:0});
 }
 function randomIndex(n){return Math.floor(Math.random()*n)}
+function randomUniqueIndices(total,count){
+  const indices=Array.from({length:total},(_,index)=>index);
+  for(let i=indices.length-1;i>0;i--){
+    const j=randomIndex(i+1);
+    [indices[i],indices[j]]=[indices[j],indices[i]];
+  }
+  return indices.slice(0,count).sort((a,b)=>a-b);
+}
+function isImpostor(index){
+  return session.impostorIndices.includes(index);
+}
+function impostorWord(count){
+  return count===1?"impostor":"impostores";
+}
+function updateImpostorCountOptions(){
+  const select=$("#impostor-count");
+  if(!select)return;
+
+  const previous=Math.max(1,Number(select.value)||1);
+  const max=Math.max(1,setupPlayers.length-1);
+
+  select.innerHTML="";
+  for(let count=1;count<=max;count++){
+    const option=document.createElement("option");
+    option.value=String(count);
+    option.textContent=`${count} ${impostorWord(count)}`;
+    select.appendChild(option);
+  }
+
+  select.value=String(Math.min(previous,max));
+  select.disabled=setupPlayers.length<3;
+
+  const note=$("#impostor-count-note");
+  if(setupPlayers.length<3){
+    note.textContent="Adicione pelo menos 3 jogadores para criar a partida.";
+  }else{
+    note.textContent=`Você pode escolher de 1 a ${max} ${impostorWord(max)}.`;
+  }
+}
 function bytesToB64u(bytes){
   let s="";bytes.forEach(b=>s+=String.fromCharCode(b));
   return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/g,"");
@@ -184,7 +223,19 @@ async function decryptSession(code){
   const key=await crypto.subtle.importKey("raw",b64uToBytes(packet.k),{name:"AES-GCM"},false,["decrypt"]);
   const decrypted=await crypto.subtle.decrypt({name:"AES-GCM",iv:b64uToBytes(packet.i)},key,b64uToBytes(packet.d));
   const parsed=JSON.parse(decoder.decode(decrypted));
-  if(!Array.isArray(parsed.players)||parsed.players.length<3||typeof parsed.location!=="string"||!Number.isInteger(parsed.impostorIndex)||parsed.impostorIndex<0||parsed.impostorIndex>=parsed.players.length)throw new Error("Dados da partida inválidos.");
+
+  if(!Array.isArray(parsed.players)||parsed.players.length<1||typeof parsed.location!=="string")throw new Error("Dados da partida inválidos.");
+
+  if(Array.isArray(parsed.impostorIndices)){
+    const unique=[...new Set(parsed.impostorIndices)];
+    if(!unique.length||unique.some(index=>!Number.isInteger(index)||index<0||index>=parsed.players.length))throw new Error("Dados da partida inválidos.");
+    parsed.impostorIndices=unique;
+  }else if(Number.isInteger(parsed.impostorIndex)&&parsed.impostorIndex>=0&&parsed.impostorIndex<parsed.players.length){
+    parsed.impostorIndices=[parsed.impostorIndex];
+  }else{
+    throw new Error("Dados da partida inválidos.");
+  }
+
   return parsed;
 }
 
@@ -195,6 +246,7 @@ function renderLocations(){
 function renderSetupPlayers(){
   $("#player-count").textContent=setupPlayers.length;
   $("#start-game").disabled=setupPlayers.length<3;
+  updateImpostorCountOptions();
   const list=$("#player-list");
   if(!setupPlayers.length){list.className="player-list empty";list.innerHTML="<p>Adicione pelo menos 3 jogadores.</p>";return}
   list.className="player-list";list.innerHTML="";
@@ -213,7 +265,13 @@ function addPlayer(v){
 }
 
 async function createGame(){
-  session={id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),players:[...setupPlayers],location:locations[randomIndex(locations.length)],impostorIndex:randomIndex(setupPlayers.length)};
+  const impostorCount=Math.min(Math.max(1,Number($("#impostor-count").value)||1),setupPlayers.length-1);
+  session={
+    id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),
+    players:[...setupPlayers],
+    location:locations[randomIndex(locations.length)],
+    impostorIndices:randomUniqueIndices(setupPlayers.length,impostorCount)
+  };
   sessionCode=await encryptSession(session);
   seenOnThisDevice=new Set();
   renderHostQr();showScreen("host-screen");
@@ -243,7 +301,7 @@ function renderRoundPlayers(){
 function revealSelectedRole(){
   if(selectedPlayerIndex===null)return;
   $("#identity-dialog").close();
-  const p=session.players[selectedPlayerIndex],impostor=selectedPlayerIndex===session.impostorIndex;
+  const p=session.players[selectedPlayerIndex],impostor=isImpostor(selectedPlayerIndex);
   $("#role-player-name").textContent=p;
   if(impostor){
     $("#role-card").classList.add("impostor");
@@ -272,44 +330,78 @@ function remapSeenPlayersAfterRemoval(removedIndex){
   seenOnThisDevice=next;
 }
 
+function setGameOverReveal(names,title){
+  $("#game-over-title").textContent=title;
+  const namesContainer=$("#eliminated-impostor-name");
+  namesContainer.innerHTML="";
+
+  names.forEach(name=>{
+    const badge=document.createElement("div");
+    badge.className="impostor-name-badge";
+    badge.textContent=name;
+    namesContainer.appendChild(badge);
+  });
+
+  const locationCard=$("#game-over-location-card");
+  locationCard.classList.remove("revealed");
+  $("#game-over-location-label").textContent="Toque para revelar o local";
+  $("#game-over-location").textContent="Oculto";
+  $("#game-over-description").textContent="O local continua escondido até você tocar aqui.";
+}
+
+function revealGameOverLocation(){
+  const card=$("#game-over-location-card");
+  if(card.classList.contains("revealed"))return;
+
+  card.classList.add("revealed");
+  $("#game-over-location-label").textContent="O local era";
+  $("#game-over-location").textContent=session.location;
+  $("#game-over-description").textContent="Local revelado.";
+}
+
 async function removeSelectedPlayer(){
   if(selectedPlayerIndex===null)return;
 
   const removedIndex=selectedPlayerIndex;
   const removedName=session.players[removedIndex];
-  const wasImpostor=removedIndex===session.impostorIndex;
+  const wasImpostor=isImpostor(removedIndex);
 
   $("#remove-player-dialog").close();
 
-  if(wasImpostor){
-    $("#game-over-title").textContent="Era o impostor!";
-    $("#eliminated-impostor-name").textContent=`${removedName} era o impostor.`;
-    $("#game-over-location").textContent=session.location;
-    selectedPlayerIndex=null;
-    showScreen("game-over-screen");
-    return;
-  }
-
   session.players.splice(removedIndex,1);
-
-  if(removedIndex<session.impostorIndex){
-    session.impostorIndex-=1;
-  }
+  session.impostorIndices=session.impostorIndices
+    .filter(index=>index!==removedIndex)
+    .map(index=>index>removedIndex?index-1:index);
 
   remapSeenPlayersAfterRemoval(removedIndex);
   selectedPlayerIndex=null;
 
+  if(wasImpostor&&session.impostorIndices.length===0){
+    setGameOverReveal([removedName],"Todos os impostores foram encontrados!");
+    showScreen("game-over-screen");
+    return;
+  }
+
   sessionCode=await encryptSession(session);
 
-  $("#removed-safe-title").textContent=`${removedName} não era o impostor`;
+  if(wasImpostor){
+    const remaining=session.impostorIndices.length;
+    $("#removed-safe-title").textContent=`${removedName} era um dos impostores`;
+    $("#removed-player-message").textContent=`Essa pessoa foi removida. Ainda ${remaining===1?"há 1 impostor":"há "+remaining+" impostores"} na partida.`;
+  }else{
+    $("#removed-safe-title").textContent=`${removedName} não era impostor`;
+    $("#removed-player-message").textContent="Essa pessoa foi removida da partida. Os impostores continuam entre os jogadores restantes.";
+  }
+
   renderRoundPlayers();
   $("#removed-safe-dialog").showModal();
 }
-function revealImpostorAndEndGame(){
-  const impostorName=session.players[session.impostorIndex];
-  $("#game-over-title").textContent="O impostor era...";
-  $("#eliminated-impostor-name").textContent=`${impostorName} era o impostor.`;
-  $("#game-over-location").textContent=session.location;
+function revealImpostorsAndEndGame(){
+  const impostorNames=session.impostorIndices.map(index=>session.players[index]);
+  setGameOverReveal(
+    impostorNames,
+    impostorNames.length===1?"O impostor era":"Os impostores eram"
+  );
   selectedPlayerIndex=null;
   showScreen("game-over-screen");
 }
@@ -403,12 +495,26 @@ $("#game-over-new-game").onclick=()=>{
   showScreen("setup-screen");
 };
 $("#game-over-home").onclick=leaveGame;
+$("#game-over-location-card").onclick=revealGameOverLocation;
+$("#game-over-location-card").onkeydown=event=>{
+  if(event.key==="Enter"||event.key===" "){
+    event.preventDefault();
+    revealGameOverLocation();
+  }
+};
 $("#choose-starter").onclick=()=>$("#starter-dialog").showModal();
-$("#reveal-impostor").onclick=()=>$("#reveal-impostor-dialog").showModal();
+$("#reveal-impostor").onclick=()=>{
+  const count=session.impostorIndices.length;
+  $("#reveal-impostor-title").textContent=count===1?"Revelar o impostor?":"Revelar os impostores?";
+  $("#reveal-impostor-message").textContent=count===1
+    ?"Isso mostrará quem é o impostor. O local continuará oculto até você tocar para revelá-lo."
+    :"Isso mostrará quem são os impostores. O local continuará oculto até você tocar para revelá-lo.";
+  $("#reveal-impostor-dialog").showModal();
+};
 $("#reveal-impostor-cancel").onclick=()=>$("#reveal-impostor-dialog").close();
 $("#reveal-impostor-confirm").onclick=()=>{
   $("#reveal-impostor-dialog").close();
-  revealImpostorAndEndGame();
+  revealImpostorsAndEndGame();
 };
 $("#starter-cancel").onclick=()=>$("#starter-dialog").close();
 $("#starter-confirm").onclick=()=>{$("#starter-dialog").close();chooseStarter()};

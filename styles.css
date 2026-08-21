@@ -37,7 +37,8 @@ body {
 
 button,
 input,
-textarea {
+textarea,
+select {
   font: inherit;
 }
 
@@ -264,7 +265,8 @@ label {
 }
 
 input,
-textarea {
+textarea,
+select {
   width: 100%;
   min-width: 0;
   padding: 14px 15px;
@@ -280,8 +282,13 @@ textarea {
   resize: vertical;
 }
 
+select {
+  cursor: pointer;
+}
+
 input:focus,
-textarea:focus {
+textarea:focus,
+select:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px rgba(98, 129, 65, 0.1);
 }
@@ -708,3 +715,71 @@ textarea:focus {
     background: rgba(41, 48, 39, 0.88);
   }
 }
+
+.impostor-count-field {
+  margin-top: 22px;
+}
+
+.impostor-count-field select {
+  width: 100%;
+}
+
+.impostor-count-field p {
+  margin: 7px 0 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.impostor-reveal-name {
+  display: grid;
+  gap: 10px;
+  margin: 24px 0 30px;
+}
+
+.impostor-name-badge {
+  padding: 18px 20px;
+  border: 2px solid rgba(168, 59, 53, 0.5);
+  border-radius: 15px;
+  color: var(--danger);
+  background: var(--danger-soft);
+  font-family: "Coustard", serif;
+  font-size: clamp(1.7rem, 6vw, 2.5rem);
+  font-weight: 900;
+  line-height: 1.15;
+}
+
+.result-reveal-card {
+  width: 100%;
+  cursor: pointer;
+  text-align: center;
+  transition:
+    transform 120ms ease,
+    border-color 160ms ease,
+    background-color 160ms ease;
+}
+
+.result-reveal-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+}
+
+.result-reveal-card:focus-visible {
+  outline: 3px solid rgba(98, 129, 65, 0.28);
+  outline-offset: 2px;
+}
+
+.result-reveal-card.revealed {
+  cursor: default;
+  border-color: rgba(98, 129, 65, 0.5);
+  background: rgba(139, 174, 102, 0.16);
+}
+
+.result-reveal-card.revealed:hover {
+  transform: none;
+}
+
+.result-reveal-card h2 {
+  overflow-wrap: anywhere;
+}
+
