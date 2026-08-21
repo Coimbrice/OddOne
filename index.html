@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Coustard:wght@400;900&family=Inter:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="styles.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
@@ -175,14 +176,16 @@
   </main>
 
   <dialog id="identity-dialog" class="dialog">
-    <div class="dialog-content">
+    <div class="dialog-content identity-dialog-content">
+      <button id="remove-player-action" class="remove-player-dialog-button" type="button" aria-label="Remover jogador" title="Remover jogador">
+        <i class="fas fa-trash"></i>
+      </button>
       <p class="eyebrow">Jogador</p>
       <h2 id="identity-title">Ana</h2>
       <p>O que você quer fazer com este jogador?</p>
       <div class="dialog-actions stacked-dialog-actions">
-        <button id="identity-cancel" class="button ghost full">Voltar</button>
-        <button id="remove-player-action" class="button danger-button full">Remover jogador</button>
         <button id="identity-confirm" class="button primary full">Sou eu, revelar papel</button>
+        <button id="identity-cancel" class="button ghost full">Voltar</button>
       </div>
     </div>
   </dialog>

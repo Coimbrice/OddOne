@@ -783,3 +783,46 @@ select:focus {
   overflow-wrap: anywhere;
 }
 
+.identity-dialog-content {
+  position: relative;
+}
+
+.remove-player-dialog-button {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 10px;
+  color: var(--danger);
+  background: transparent;
+  font-size: 1rem;
+  transition:
+    color 160ms ease,
+    background-color 160ms ease,
+    transform 120ms ease;
+}
+
+.remove-player-dialog-button:hover {
+  background: var(--danger-soft);
+  transform: translateY(-1px);
+}
+
+.remove-player-dialog-button:active {
+  transform: translateY(0);
+}
+
+.remove-player-dialog-button:focus-visible {
+  outline: 3px solid rgba(168, 59, 53, 0.24);
+  outline-offset: 2px;
+}
+
+.identity-dialog-content > .eyebrow,
+.identity-dialog-content > h2,
+.identity-dialog-content > p {
+  padding-right: 48px;
+}
+
