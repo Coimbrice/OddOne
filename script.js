@@ -816,9 +816,12 @@ async function loadGameFromUrl() {
   const params = new URLSearchParams(location.hash.slice(1));
   const game = params.get("game");
 
-  if (!game) {
+  if (!game || game === sessionCode) {
     return;
   }
+
+  document.querySelectorAll("dialog[open]").forEach((dialog) => dialog.close());
+  await stopScanner();
 
   try {
     session = await decryptSession(game);
@@ -830,6 +833,10 @@ async function loadGameFromUrl() {
     alert("Não foi possível carregar a partida deste link.");
   }
 }
+
+// iOS opens a scanned link in the tab that already has the game, changing only the hash,
+// so the page never reloads. Without this, the previous game stays on screen.
+window.addEventListener("hashchange", loadGameFromUrl);
 
 populateThemes();
 renderSetupPlayers();
