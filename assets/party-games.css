@@ -1,0 +1,463 @@
+/* Interface compartilhada pelos jogos presenciais (OddOneOut e Twins). */
+
+.hidden {
+  display: none !important;
+}
+
+.app {
+  width: min(100%, 680px);
+  margin: 0 auto;
+  padding: clamp(24px, 6vw, 48px) var(--gutter) 0;
+}
+
+.screen {
+  display: none;
+  width: 100%;
+}
+
+.screen.active {
+  display: block;
+  animation: screen-in 160ms ease-out;
+}
+
+@keyframes screen-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.card {
+  width: 100%;
+  padding: clamp(22px, 5vw, 40px);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.centered {
+  text-align: center;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.card h1 {
+  font-size: clamp(1.9rem, 6.5vw, 2.9rem);
+}
+
+.card h2 {
+  font-size: 1.1rem;
+}
+
+.subtitle {
+  max-width: 560px;
+  margin: 12px 0 26px;
+  color: var(--muted);
+}
+
+.centered .subtitle {
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.home-note {
+  margin: 18px 0 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.wordmark {
+  display: inline-flex;
+  align-items: baseline;
+  margin: 0 0 14px;
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 12vw, 5.2rem);
+  font-weight: 400;
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+}
+
+.wordmark strong {
+  color: var(--accent);
+  font-weight: 800;
+}
+
+/* Botões no estilo da base (.btn), com os nomes usados pelos jogos */
+
+.button-stack {
+  display: grid;
+  gap: 10px;
+}
+
+.spaced {
+  margin-top: 28px;
+}
+
+.button {
+  min-height: 50px;
+  padding: 12px 18px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  color: var(--text);
+  background: transparent;
+  font-weight: 700;
+  line-height: 1.2;
+  transition:
+    background-color 120ms ease,
+    color 120ms ease;
+}
+
+.button:hover:not(:disabled) {
+  background: var(--surface-2);
+  border-color: var(--border);
+}
+
+.button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.primary {
+  border-color: var(--accent);
+  color: var(--on-accent);
+  background: var(--accent);
+}
+
+.primary:hover:not(:disabled) {
+  border-color: var(--accent-hover);
+  background: var(--accent-hover);
+}
+
+.secondary {
+  background: var(--surface-2);
+}
+
+.secondary:hover:not(:disabled) {
+  background: var(--bg);
+}
+
+.ghost {
+  border-color: var(--rule);
+  color: var(--muted);
+}
+
+.danger-button {
+  border-color: var(--danger);
+  color: var(--surface);
+  background: var(--danger);
+}
+
+.danger-button:hover:not(:disabled) {
+  color: var(--surface);
+  background: var(--danger);
+  filter: brightness(0.9);
+}
+
+.full {
+  width: 100%;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  margin: -8px 0 16px;
+  padding: 0;
+  border: 0;
+  color: var(--muted);
+  background: transparent;
+  font-weight: 700;
+}
+
+.back-link::before {
+  content: "←";
+  margin-right: 6px;
+}
+
+.back-link:hover {
+  color: var(--text);
+}
+
+/* Campos */
+
+.card label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.input-row {
+  display: flex;
+  gap: 8px;
+}
+
+.card input:not([type="checkbox"]),
+.card textarea,
+.card select {
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  font-size: 1rem;
+}
+
+.card textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.card input:focus-visible,
+.card textarea:focus-visible,
+.card select:focus-visible {
+  outline-offset: 0;
+}
+
+.section-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 28px 0 10px;
+}
+
+.counter {
+  min-width: 28px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  color: var(--on-accent);
+  background: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+/* Lista de jogadores na criação da partida */
+
+.player-list {
+  display: grid;
+  gap: 0;
+  margin-bottom: 24px;
+  border-top: 1px solid var(--rule);
+}
+
+.player-list.empty {
+  padding: 16px;
+  border: 2px dashed var(--rule);
+  border-radius: var(--radius-lg);
+  color: var(--muted);
+  text-align: center;
+}
+
+.player-list.empty p {
+  margin: 0;
+}
+
+.player-chip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 48px;
+  padding: 4px 0 4px 2px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.remove-player {
+  width: 40px;
+  height: 40px;
+  flex: none;
+  border: 0;
+  border-radius: var(--radius);
+  color: var(--muted);
+  background: transparent;
+  font-size: 1.3rem;
+  line-height: 1;
+}
+
+.remove-player:hover {
+  color: var(--danger);
+  background: var(--danger-soft);
+}
+
+/* Lista de respostas possíveis */
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-height: 190px;
+  overflow: auto;
+}
+
+.tag {
+  padding: 4px 10px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+/* Rodada */
+
+.round-player-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.round-player-button {
+  min-height: 72px;
+  padding: 14px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+  background: var(--surface-2);
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-align: left;
+  overflow-wrap: anywhere;
+  transition: background-color 120ms ease;
+}
+
+.round-player-button:hover {
+  background: var(--surface-2);
+  border-color: var(--border);
+}
+
+.round-player-button.seen {
+  border-color: var(--rule);
+  color: var(--muted);
+}
+
+.round-player-button.seen::after {
+  content: "Já viu o papel";
+  display: block;
+  margin-top: 4px;
+  color: var(--success);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.role-card {
+  margin: 28px 0 22px;
+  padding: 32px 20px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+  background: var(--bg);
+}
+
+.role-card.impostor {
+  border-color: var(--danger);
+  background: var(--danger-soft);
+}
+
+.role-label {
+  margin: 0 0 10px;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.role-card h2 {
+  font-size: clamp(2rem, 8vw, 3rem);
+  overflow-wrap: anywhere;
+}
+
+.role-card p {
+  color: var(--muted);
+}
+
+.role-card p:last-child {
+  margin-bottom: 0;
+}
+
+.starter-badge {
+  display: grid;
+  place-items: center;
+  width: 104px;
+  height: 104px;
+  margin: 28px auto;
+  border-radius: 50%;
+  color: var(--on-accent);
+  background: var(--accent);
+  font-family: var(--font-display);
+  font-size: 3.2rem;
+  font-weight: 800;
+}
+
+/* Diálogos */
+
+.dialog {
+  width: min(calc(100% - 32px), 460px);
+  padding: 0;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+  color: var(--text);
+  background: var(--surface);
+}
+
+.dialog::backdrop {
+  background: rgba(22, 29, 21, 0.75);
+}
+
+.dialog-content {
+  padding: 24px;
+}
+
+.dialog-content h2 {
+  font-size: 1.35rem;
+}
+
+.dialog-content p {
+  color: var(--muted);
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.stacked-dialog-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+@media (max-width: 520px) {
+  .app {
+    padding: 0;
+  }
+
+  .card {
+    min-height: calc(100dvh - 66px);
+    padding: 26px var(--gutter) 32px;
+    border-width: 0;
+    border-radius: 0;
+  }
+
+  .input-row {
+    flex-direction: column;
+  }
+
+  .round-player-list {
+    grid-template-columns: 1fr;
+  }
+
+  .dialog-actions {
+    flex-direction: column-reverse;
+  }
+
+  .dialog-actions .button {
+    width: 100%;
+  }
+}
