@@ -79,3 +79,7 @@ OddOne/
     ├── game-data.js     # temas e palavras
     └── fonts/
 ```
+
+## Licença
+
+O código está sob a licença MIT (veja [LICENSE](LICENSE)). As fontes em `assets/fonts/` (Schibsted Grotesk e IBM Plex Mono) seguem a SIL Open Font License dos seus autores.
